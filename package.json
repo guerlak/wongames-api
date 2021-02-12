@@ -9,7 +9,10 @@
     "build": "strapi build",
     "strapi": "strapi"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jsdom": "^16.4.0",
+    "slugify": "^1.4.6"
+  },
   "dependencies": {
     "knex": "<0.20.0",
     "pg": "latest",
