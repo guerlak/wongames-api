@@ -1,10 +1,5 @@
 'use strict';
 
-/**
- * Read the documentation (https://strapi.io/documentation/developer-docs/latest/concepts/services.html#core-services)
- * to customize this service
- */
-
 const axios = require('axios')
 const slugify = require('slugify')
 
@@ -46,7 +41,7 @@ function dataInsertion(products) {
   const platforms = {}
 
   products.forEach(prod => {
-    const { developer, publisher, genres, supportedOperatingSystems } = product;
+    const { developer, publisher, genres, supportedOperatingSystems } = prod;
 
     genres &&
       genres.forEach(item => {
@@ -57,7 +52,16 @@ function dataInsertion(products) {
         platforms[item] = true;
       })
 
+    developers[developer] = true;
+    publishers[publisher] = true;
   })
+
+  return Promise.all([
+    ...Object.keys(developers).map(name => create(name, 'developer')),
+    ...Object.keys(publishers).map(name => create(name, 'publisher')),
+    ...Object.keys(categories).map(name => create(name, 'category')),
+    ...Object.keys(platforms).map(name => create(name, 'platform'))
+  ])
 }
 
 module.exports = {
@@ -68,10 +72,9 @@ module.exports = {
     const gogApiUrl = `https://www.gog.com/games/ajax/filtered?mediaType=game&page=1&sort=popularity`;
     const { data: { products } } = await axios.get(gogApiUrl);
 
-    console.log(products[0])
-
-    await create(products[0].publisher, "publisher")
-    await create(products[0].developer, "developer")
+    await dataInsertion([products[2], products[3]])
+    // await create(products[0].publisher, "publisher")
+    // await create(products[0].developer, "developer")
 
   }
 };
